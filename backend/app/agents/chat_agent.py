@@ -64,11 +64,24 @@ class CoachChatAgent:
                 finally:
                     db.close()
 
+            def create_task(title: str, contact_id: Optional[int] = None, due_in_days: int = 3, priority: str = "MEDIUM"):
+                """Creates a new task. Always try to find contact_id first if for a specific person."""
+                from app.tools import task_tools
+                task_data = {
+                    "title": title,
+                    "contact_id": contact_id,
+                    "due_in_days": due_in_days,
+                    "priority": priority,
+                    "status": "OPEN",
+                    "task_type": "FOLLOW_UP" # Default
+                }
+                return task_tools.upsert_task_tool(task_data, agent_user_id)
+
             # 2. Create ADK Agent with injected tools
             # Import the ADK-compliant agent class
             from agents.RealEstateCopilot.chat_assistant import ChatAssistant
             
-            agent = ChatAssistant(tools=[search_contacts, search_tasks, get_contact_profile, search_emails, count_contacts, count_tasks])
+            agent = ChatAssistant(tools=[search_contacts, search_tasks, get_contact_profile, search_emails, count_contacts, count_tasks, create_task])
 
             # 3. Create Session (if needed)
             # Ensure session exists for this user/chat
@@ -112,7 +125,7 @@ class CoachChatAgent:
                 new_message=Message("user", message)
             ):
                 # Extract text from event
-                if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts'):
+                if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts') and event.content.parts:
                     for part in event.content.parts:
                         if hasattr(part, 'text') and part.text:
                             response_text += part.text

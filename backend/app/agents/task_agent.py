@@ -164,7 +164,7 @@ Email Thread History:
                     print(f"    Event dir: {dir(event)}")
                 
                 # Extract text from event
-                if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts'):
+                if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts') and event.content.parts:
                     for part in event.content.parts:
                         if hasattr(part, 'text') and part.text:
                             response_text += part.text
@@ -236,6 +236,7 @@ Email Thread History:
                     due_date=due_date,
                     source_thread_id=threads[0].id if threads else None
                 )
+                print(f"    DEBUG: Creating task for contact_id={contact.id} (Object: {contact})")
                 db.add(task)
                 tasks_created += 1
                 print(f"    Created task: {task.title} (Priority: {priority_str}, Due: {due_in_days} days)")

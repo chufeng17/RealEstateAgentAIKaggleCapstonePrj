@@ -76,6 +76,11 @@ export default function TasksPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {task.task_type} • Priority: {task.priority}
                 </p>
+                {task.contact_name && (
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400 mt-0.5">
+                    For: {task.contact_name}
+                  </p>
+                )}
                 {task.due_date && (
                   <div className="mt-1 flex items-center text-xs text-gray-500">
                     <Clock className="mr-1 h-3 w-3" />
